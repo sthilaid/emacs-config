@@ -7,7 +7,7 @@
 (package-initialize)
 
 (add-to-list 'load-path "~/emacs-stuff")
-(add-to-list 'load-path "~/emacs-stuff/fb-mode")
+;(add-to-list 'load-path "~/emacs-stuff/fb-mode")
 (add-to-list 'load-path "~/emacs-stuff/multiple-cursors")
 
 ;; increase font size (default: 100)
@@ -45,22 +45,8 @@
 (setq ispell-personal-dictionary "~/.ispell")
 (require 'ispell)
 
-;; Evernote
-;; (require 'evernote-mode)
-;; (setq evernote-enml-formatter-command '("w3m" "-dump" "-I" "UTF8" "-O" "UTF8"))
-;; (global-set-key "\C-cec" 'evernote-create-note)
-;; (global-set-key "\C-ceo" 'evernote-open-note)
-;; (global-set-key "\C-ces" 'evernote-search-notes)
-;; (global-set-key "\C-ceS" 'evernote-do-saved-search)
-;; (global-set-key "\C-cew" 'evernote-write-note)
-;; (global-set-key "\C-cep" 'evernote-post-region)
-;; (global-set-key "\C-ceb" 'evernote-browser)
-
-;; go mode
-                                        ;(require 'go-mode)
-
 ;; far search :)
-                                        ;(require 'far-search)
+;;(require 'far-search)
 
 ;; unreal script mode
 ;; (require 'unrealscript-mode)
@@ -95,18 +81,6 @@
 ;; (setq auto-mode-alist
 ;; (append '(("\\.as$" . javascript-mode)) auto-mode-alist))
 
-;; full-ack setup
-;; (autoload 'ack-same "full-ack" nil t)
-;; (autoload 'ack "full-ack" nil t)
-;; (autoload 'ack-find-same-file "full-ack" nil t)
-;; (autoload 'ack-find-file "full-ack" nil t)
-
-;; (require 'ack-and-a-half)
-;; (defalias 'ack 'ack-and-a-half)
-;; (defalias 'ack-same 'ack-and-a-half-same)
-;; (defalias 'ack-find-file 'ack-and-a-half-find-file)
-;; (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
-
 ;; custom key bindings
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-M-=") 'rgrep)
@@ -131,8 +105,7 @@
 (column-number-mode t)
 
 ;; indent setup
-
-                                        ; this style is better then the default "gnu" style... O_O;
+;; this style is better then the default "gnu" style... O_O;
 (setq-default c-default-style "awk"
               c-basic-offset 4
               tab-width 4
@@ -156,7 +129,7 @@
 
   (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60))
   (setq tab-width 4)
-  (setq indent-tabs-mode t) ; use spaces only if nil
+  (setq indent-tabs-mode nil) ; use spaces only if nil
   (setq comment-start "//")
   (setq comment-end "")
   )
@@ -225,14 +198,6 @@
 
 (setq find-program "C:\\cygwin64\\bin\\find.exe")
 
-;; full-ack mode setup
-;; (autoload 'ack-same "full-ack" nil t)
-;; (autoload 'ack "full-ack" nil t)
-;; (autoload 'ack-find-same-file "full-ack" nil t)
-;; (autoload 'ack-find-file "full-ack" nil t)
-;; ;(setq ack-executable (executable-find "grep"))
-;; (setq ack-executable "D://cygwin//bin//ack")
-
 ;;;; rgrep setup
 
 ;;; It works only if you manualy set CYGWIN_ROOT environment
@@ -286,15 +251,6 @@
 ;; (lambda ()
 ;; (local-set-key (kbd "{") 'c-electric-brace)))
 
-;; (require 'thingatpt)
-;; (defun met-rgrep (term)
-;; (interactive (list (completing-read "Search Term: " nil nil nil (thing-at-point 'word))))
-;; (grep-compute-defaults)
-;; (let ((runtime))
-;; (rgrep term "*.[ch]* -o -name \"*.cpp\"" "../")))
-
-                                        ;(executable-find "grep.exe")
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; gnuplot
 
@@ -307,6 +263,11 @@
 ;; ;; automatically open files ending with .gp or .gnuplot in gnuplot mode
 ;; (setq auto-mode-alist
 ;; (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; git
+(require 'git)
+(require 'git-blame)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User Code and Functions
