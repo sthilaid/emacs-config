@@ -240,6 +240,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ide mode
 (add-to-list 'load-path "~/emacs-stuff/ide")
+(custom-set-variables '(ide-default-current-project "c:/Users/david/AppData/Roaming/UnrealEngine/UE4.sln"))
 (require 'ide)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
