@@ -6,19 +6,12 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
+;; generic elisp file dir
 (add-to-list 'load-path "~/emacs-stuff")
-;(add-to-list 'load-path "~/emacs-stuff/fb-mode")
-(add-to-list 'load-path "~/emacs-stuff/multiple-cursors")
 
 ;; increase font size (default: 100)
 (set-face-attribute 'default (selected-frame) :height 150)
 
-;; icicles (too heavy mod, now disabled)
-;; (require 'icicles)
-;; (icy-mode 1)
-
-;; bzg-big-fringe-mode (http://bzg.fr/emacs-strip-tease.html)
-                                        ;(toggle-frame-fullscreen)
 (scroll-bar-mode 0)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -36,25 +29,48 @@
 
 (electric-indent-mode -1)
 
+;; custom key bindings
+(global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-M-=") 'rgrep)
+
+;; matching parenthesis highlighting
+(show-paren-mode t)
+
+;; desktop save (don't open by default)
+(desktop-save-mode -1)
+
+;; columns
+(column-number-mode t)
+
+;; display time in status bar
+(setq display-time-day-and-date t
+      display-time-24hr-format t)
+(display-time)
+
+(setq find-program "C:\\cygwin64\\bin\\find.exe")
+
 ;; (setq ff-search-directories
 ;; '("." "d:/Perforce/MET_NoStream/dsth_met_nostream/Metallica/Main/Game/Engine/Source/Runtime/*" "d:/Perforce/MET_NoStream/dsth_met_nostream/Metallica//Main/Game/METGame/Source/METGame/*"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ispell (http://aspell.net/win32/)
+
 (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
 (setq ispell-program-name "aspell")
 (setq ispell-personal-dictionary "~/.ispell")
 (require 'ispell)
 
-;; far search :)
-;;(require 'far-search)
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; unreal script mode
+
 ;; (require 'unrealscript-mode)
 ;; (setq auto-mode-alist
 ;; (append '(("\\.uc$" . unrealscript-mode)
 ;; ("\\.uci$" . unrealscript-mode)) auto-mode-alist))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Paredits minor lisp mode
+
 (autoload 'enable-paredit-mode "paredit"
   "Turn on pseudo-structural editing of Lisp code."
   t)
@@ -62,11 +78,9 @@
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'scheme-hook 'enable-paredit-mode)
 
-;; cg-mode
-;; (setq auto-mode-alist
-;; (append '(("\\.usf$" . cg-mode)) auto-mode-alist))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; csharp mode
+
 (autoload 'csharp-mode "csharp-mode" "Major mode for editing C# code." t)
 (setq auto-mode-alist
       (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
@@ -81,28 +95,20 @@
 ;; (setq auto-mode-alist
 ;; (append '(("\\.as$" . javascript-mode)) auto-mode-alist))
 
-;; custom key bindings
-(global-set-key (kbd "M-g") 'goto-line)
-(global-set-key (kbd "C-M-=") 'rgrep)
-
-;; matching parenthesis highlighting
-(show-paren-mode t)
-
-;; desktop save (don't open by default)
-(desktop-save-mode -1)
 
 ;; DIRED open all marked files
-(eval-after-load "dired"
-  '(progn
-     (define-key dired-mode-map "F" 'my-dired-find-file)
-     (defun my-dired-find-file (&optional arg)
-       "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
-       (interactive "P")
-       (let* ((fn-list (dired-get-marked-files nil arg)))
-         (mapc 'find-file fn-list)))))
+;; (eval-after-load "dired"
+;;   '(progn
+;;      (define-key dired-mode-map "F" 'my-dired-find-file)
+;;      (defun my-dired-find-file (&optional arg)
+;;        "Open each of the marked files, or the file under the point, or when prefix arg, the next N files "
+;;        (interactive "P")
+;;        (let* ((fn-list (dired-get-marked-files nil arg)))
+;;          (mapc 'find-file fn-list)))))
 
-;; columns
-(column-number-mode t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; c++ setup
 
 ;; indent setup
 ;; this style is better then the default "gnu" style... O_O;
@@ -158,6 +164,9 @@
 
 (add-hook 'c++-mode-common-hook 'my-c-mode-common-hook)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; highlight-symbol
+
 (require 'highlight-symbol)
 (add-hook 'prog-mode-hook (lambda ()
                             (highlight-symbol-mode t)
@@ -167,6 +176,10 @@
 (global-set-key (kbd "M-.") 'highlight-symbol)
 ;;(global-set-key (kbd "C-.") 'unhighlight-regexp)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; multiple-cursors
+
+(add-to-list 'load-path "~/emacs-stuff/multiple-cursors")
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -175,30 +188,8 @@
 (global-set-key (kbd "<C-up>") 'mc/mark-previous-lines)
 (global-set-key (kbd "<C-down>") 'mc/mark-next-lines)
 
-;; (custom-set-variables
-;; ;; custom-set-variables was added by Custom.
-;; ;; If you edit it by hand, you could mess it up, so be careful.
-;; ;; Your init file should contain only one such instance.
-;; ;; If there is more than one, they won't work right.
-;; '(ack-arguments nil)
-;; '(ack-executable "c:/cygwin/bin/perl c:/cygwin/home/david.st-hilaire/bin/ack")
-;; '(p4-cygpath-exec "d:/cygwin/bin/cygpath"))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(far-search-result-match-face ((t (:foreground "red")))))
-
-;; display time in status bar
-(setq display-time-day-and-date t
-      display-time-24hr-format t)
-(display-time)
-
-(setq find-program "C:\\cygwin64\\bin\\find.exe")
-
-;;;; rgrep setup
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; rgrep setup
 
 ;;; It works only if you manualy set CYGWIN_ROOT environment
 ;;; variable for your Windows system
@@ -222,6 +213,9 @@
     ad-do-it))
 (ad-activate 'grep-compute-defaults)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; fb-mode
+
 ;; (custom-set-variables '(fb-current-project "Walrus"))
 ;; (custom-set-variables '(fb-current-project-module "WS"))
 ;; (custom-set-variables '(fb-current-project "Gaia"))
@@ -233,16 +227,24 @@
 ;;                                             "levels/gyms/gameplay/combat/gym_combat_gateonephaseone/gym_gameplay_combat_gateonephaseone")))
 ;; (require 'fb)
 
-(add-hook 'c++-mode-hook 'fb-mode)
-(add-hook 'xml-mode-hook 'fb-mode)
-(add-hook 'csharp-mode-hook 'fb-mode)
-(add-hook 'compilation-mode-hook 'fb-mode)
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.ddf\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.build\\'" . xml-mode))
+;; (add-hook 'c++-mode-hook 'fb-mode)
+;; (add-hook 'xml-mode-hook 'fb-mode)
+;; (add-hook 'csharp-mode-hook 'fb-mode)
+;; (add-hook 'compilation-mode-hook 'fb-mode)
+;; (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.ddf\\'" . c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
+;; (add-to-list 'auto-mode-alist '("\\.build\\'" . xml-mode))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ide mode
+(add-to-list 'load-path "~/emacs-stuff/ide")
+(require 'ide)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; unity3d mode
+
 ;; (custom-set-variables '(unity3d-current-project "GaiaProto"))
 ;; (custom-set-variables '(unity3d-project-root "d:/motive"))
 ;; (require 'unity3d)
