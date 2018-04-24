@@ -173,8 +173,14 @@
                             (highlight-symbol-nav-mode t)))
 (highlight-symbol-mode t)
 (highlight-symbol-nav-mode t)
-(global-set-key (kbd "M-.") 'highlight-symbol)
+(global-set-key (kbd "<M-return>") 'highlight-symbol)
 ;;(global-set-key (kbd "C-.") 'unhighlight-regexp)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; tags & xref
+
+(global-set-key (kbd "M-.") 'xref-find-definitions)
+(global-set-key (kbd "C-M-.") 'xref-find-references)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; multiple-cursors
