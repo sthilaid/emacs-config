@@ -10,7 +10,7 @@
 (add-to-list 'load-path "~/emacs-stuff")
 
 ;; increase font size (default: 100)
-(set-face-attribute 'default (selected-frame) :height 150)
+(set-face-attribute 'default (selected-frame) :height 130)
 
 (scroll-bar-mode 0)
 (tool-bar-mode 0)
@@ -86,7 +86,7 @@
       (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
 ;; perforce integration // http://p4el.sourceforge.net/p4.el.html
-;;(load-library "p4")
+(require 'p4)
 
 ;; diff two buffer regions (https://gist.github.com/zdavkeos/1279865/download#)
                                         ;(load-library "diff_region")
@@ -115,12 +115,12 @@
 (setq-default c-default-style "awk"
               c-basic-offset 4
               tab-width 4
-              indent-tabs-mode t)
+              indent-tabs-mode nil)
 
 ;; (setq-default c-default-style "java"
 ;; c-basic-offset 4
 ;; tab-width 4
-;; indent-tabs-mode t)
+;; indent-tabs-mode nil)
 
 (setq tab-stop-list (number-sequence 4 120 4))
 
@@ -140,6 +140,7 @@
   (setq comment-end "")
   )
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 
 (add-hook 'c++-mode-hook
           '(lambda()
@@ -173,8 +174,14 @@
                             (highlight-symbol-nav-mode t)))
 (highlight-symbol-mode t)
 (highlight-symbol-nav-mode t)
-(global-set-key (kbd "M-.") 'highlight-symbol)
+(global-set-key (kbd "<M-return>") 'highlight-symbol)
 ;;(global-set-key (kbd "C-.") 'unhighlight-regexp)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; tags & xref
+
+(global-set-key (kbd "M-.") 'xref-find-definitions)
+(global-set-key (kbd "C-M-.") 'xref-find-references)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; multiple-cursors
@@ -236,12 +243,37 @@
 ;; (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.build\\'" . xml-mode))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; compilation
+
+;; (defun d-compile-first-error ()
+;;   "Point goes to the first compilation error, if any. Else point goes at the end of the buffer."
+;;   (goto-char 0)
+;;   (compilation-next-error 1))
+
+;; (define-key compilation-mode-map (kbd "<C-Tab>") 'd-compile-first-error)
+
+(custom-set-variables '(compilation-auto-jump-to-first-error t))
+(require 'compile)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ide mode
+
 (add-to-list 'load-path "~/emacs-stuff/ide")
-(custom-set-variables '(ide-default-current-project "c:/Users/david/AppData/Roaming/UnrealEngine/UE4.sln"))
+(custom-set-variables '(ide-default-current-solution "..."))
+(custom-set-variables '(ide-msbuild-path "\"C:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe\""))
+(custom-set-variables '(ide-vs-platforms '("Any CPU")))
+(custom-set-variables '(ide-tags-generator '"C:/Users/dsthillaire/Documents/emacs-25.3_1-x86_64/bin/etags.exe"))
+(custom-set-variables '(ide-vs-configurations '("X64-Master"
+												"X64-Release"
+												"X64-Release-NoUnity"
+												"X64-Retail")))
+(custom-set-variables '(ide-additionnal-source-paths '("w:/Main/external/technology-group/gear/" "w:/Main/external/ImGui/")))
 (require 'ide)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; igo mode
+(require 'igo)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; unity3d mode
@@ -647,4 +679,11 @@ Use \\[edit-tab-stops] to edit them interactively."
 (defun d-copy-filepath ()
   "Copies the current buffer file complete path to the kill-ring / clipboard"
   (interactive)
-  (kill-new (buffer-file-name (current-buffer))))
+  (let ((filename (buffer-file-name (current-buffer))))
+   (kill-new filename)
+   (message filename)))
+
+
+;; eshell reference
+;; ----
+;; for f in * (save-excursion (progn (find-file f) (replace-regexp "aaa/" "bbb/aaa/") (save-excursion)))
