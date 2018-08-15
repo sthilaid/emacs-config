@@ -32,6 +32,7 @@
 ;; custom key bindings
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-M-=") 'rgrep)
+(global-set-key (kbd "C-z") (lambda () (interactive) (delete-other-windows) (bury-buffer)))
 
 ;; matching parenthesis highlighting
 (show-paren-mode t)
@@ -264,10 +265,7 @@
 (custom-set-variables '(ide-msbuild-path "\"C:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe\""))
 (custom-set-variables '(ide-vs-platforms '("Any CPU")))
 (custom-set-variables '(ide-tags-generator '"C:/Users/dsthillaire/Documents/emacs-25.3_1-x86_64/bin/etags.exe"))
-(custom-set-variables '(ide-vs-configurations '("X64-Master"
-												"X64-Release"
-												"X64-Release-NoUnity"
-												"X64-Retail")))
+(custom-set-variables '(ide-vs-configurations '()))
 (custom-set-variables '(ide-additionnal-source-paths '("w:/Main/external/technology-group/gear/" "w:/Main/external/ImGui/")))
 (require 'ide)
 
@@ -303,6 +301,14 @@
 ;; git
 (require 'git)
 (require 'git-blame)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; python
+(custom-set-variables '(python-shell-exec-path (cons "d:/python34"
+                                                     nil)))
+
+(custom-set-variables '(gud-pdb-command-name (cons "d:/python34 -m pdb "
+                                                     nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User Code and Functions
