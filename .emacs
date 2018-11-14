@@ -689,6 +689,28 @@ Use \\[edit-tab-stops] to edit them interactively."
    (kill-new filename)
    (message filename)))
 
+(defun d-include-from-killed-path ()
+  "will create a cpp include line including the top item in the kill ring"
+  (interactive)
+  (beginning-of-line)
+  (indent-for-tab-command)
+  (insert "#include \"")
+  (yank)
+  (insert "\"\n"))
+
+(defun d-tea-time (time)
+  "Will open a new buffer window and preint TEA IS READY after the given time, see the doc for run-at-time for info on time format... "
+  (interactive)
+  (run-at-time time nil
+               (lambda ()
+                 (let ((tea-buffer (generate-new-buffer "tea-time")))
+                   (set-window-buffer nil tea-buffer)
+                   (delete-other-windows)
+                   (with-current-buffer tea-buffer
+                     (insert "TEA IS READY")))))
+  (message (concat "tea will be ready in " time)))
+
+
 
 ;; eshell reference
 ;; ----
