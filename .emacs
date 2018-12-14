@@ -261,11 +261,11 @@
 ;; ide mode
 
 (add-to-list 'load-path "~/emacs-stuff/ide")
-(custom-set-variables '(ide-default-current-solution "..."))
+(custom-set-variables '(ide-default-current-solution "xxxxxxxxxxxxxxxxxxx"))
 (custom-set-variables '(ide-msbuild-path "\"C:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe\""))
 (custom-set-variables '(ide-vs-platforms '("Any CPU")))
 (custom-set-variables '(ide-tags-generator '"C:/Users/dsthillaire/Documents/emacs-25.3_1-x86_64/bin/etags.exe"))
-(custom-set-variables '(ide-vs-configurations '()))
+(custom-set-variables '(ide-vs-configurations '("xxxxxxxx")))
 (custom-set-variables '(ide-additionnal-source-paths '("w:/Main/external/technology-group/gear/" "w:/Main/external/ImGui/")))
 (require 'ide)
 
@@ -276,8 +276,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; unity3d mode
 
-;; (custom-set-variables '(unity3d-current-project "GaiaProto"))
-;; (custom-set-variables '(unity3d-project-root "d:/motive"))
+;; (custom-set-variables '(unity3d-current-project "xxxxx"))
+;; (custom-set-variables '(unity3d-project-root "xxxxx"))
 ;; (require 'unity3d)
 ;; (add-hook 'csharp-mode-hook 'unity3d-mode)
 ;; (add-hook 'csharp-mode-hook
@@ -303,12 +303,22 @@
 (require 'git-blame)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; lua
+(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
+(add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+(add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; python
-(custom-set-variables '(python-shell-exec-path (cons "d:/python34"
+(custom-set-variables '(python-shell-exec-path (cons "d:/python37"
                                                      nil)))
 
-(custom-set-variables '(gud-pdb-command-name (cons "d:/python34 -m pdb "
+(custom-set-variables '(gud-pdb-command-name (cons "d:/python37 -m pdb "
                                                      nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; crc
+(require 'crc)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User Code and Functions
@@ -686,8 +696,8 @@ Use \\[edit-tab-stops] to edit them interactively."
   "Copies the current buffer file complete path to the kill-ring / clipboard"
   (interactive)
   (let ((filename (buffer-file-name (current-buffer))))
-   (kill-new filename)
-   (message filename)))
+    (kill-new filename)
+    (message filename)))
 
 (defun d-include-from-killed-path ()
   "will create a cpp include line including the top item in the kill ring"
@@ -709,8 +719,6 @@ Use \\[edit-tab-stops] to edit them interactively."
                    (with-current-buffer tea-buffer
                      (insert "TEA IS READY")))))
   (message (concat "tea will be ready in " time)))
-
-
 
 ;; eshell reference
 ;; ----
