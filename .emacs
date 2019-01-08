@@ -723,3 +723,35 @@ Use \\[edit-tab-stops] to edit them interactively."
 ;; eshell reference
 ;; ----
 ;; for f in * (save-excursion (progn (find-file f) (replace-regexp "aaa/" "bbb/aaa/") (save-excursion)))
+
+(defun d-kill (process)
+  (interactive (let* ((history-sym	'd-kill-history)
+                      (history		(if (boundp history-sym) (eval history-sym) '()))
+                      (last-value	(if (consp history) (car history) ""))
+                      (input-value  (read-string (concat "process str" "(default: " last-value "): ") nil history-sym)))
+                 (list (if (string= input-value "") last-value input-value))))
+  (let ((shell-buffer (get-buffer-create (concat "*temp-" (number-to-string (random)) "*"))))
+    (with-current-buffer shell-buffer
+      (eshell-command (concat "ps -aW | grep -i " process) t)
+      (goto-char (point-min))
+      (let ((csv-data nil))
+        (while (not (eobp))
+          (let ((line (buffer-substring-no-properties
+                       (line-beginning-position) (line-end-position))))
+            (push (split-string line split-string-default-separators t split-string-default-separators) csv-data))
+          (forward-line 1))
+        (setq csv-data (reverse csv-data))
+        ;;(debug)
+        (if (or (= (length csv-data) 0)
+                (string= (caar csv-data) "Usage:"))
+            (message "No process found...")
+          (let ((kill-count 0))
+            (cl-loop for line in csv-data
+                     do (let ((pid (elt line 0))
+                              (proc-path (elt line (- (length line) 1))))
+                          (if (y-or-n-p (concat "kill " pid " (" proc-path ")?"))
+                              (progn ;(eshell-command (concat "kill " pid))
+                                     (eshell-command (concat "taskkill.exe /F /PID " pid))
+                                     (incf kill-count)))))
+            (message (concat "Found " (number-to-string (length csv-data)) " processes, killed " (number-to-string kill-count)))))))
+    (kill-buffer shell-buffer)))
