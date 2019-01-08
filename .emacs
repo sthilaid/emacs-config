@@ -654,3 +654,64 @@ Use \\[edit-tab-stops] to edit them interactively."
   "Copies the current buffer file complete path to the kill-ring / clipboard"
   (interactive)
   (kill-new (buffer-file-name (current-buffer))))
+
+(defun d-copy-filepath ()
+  "Copies the current buffer file complete path to the kill-ring / clipboard"
+  (interactive)
+  (let ((filename (buffer-file-name (current-buffer))))
+    (kill-new filename)
+    (message filename)))
+
+(defun d-include-from-killed-path ()
+  "will create a cpp include line including the top item in the kill ring"
+  (interactive)
+  (beginning-of-line)
+  (indent-for-tab-command)
+  (insert "#include \"")
+  (yank)
+  (insert "\"\n"))
+
+(defun d-tea-time (time)
+  "Will open a new buffer window and preint TEA IS READY after the given time, see the doc for run-at-time for info on time format... "
+  (interactive)
+  (run-at-time time nil
+               (lambda ()
+                 (let ((tea-buffer (generate-new-buffer "tea-time")))
+                   (set-window-buffer nil tea-buffer)
+                   (delete-other-windows)
+                   (with-current-buffer tea-buffer
+                     (insert "TEA IS READY")))))
+  (message (concat "tea will be ready in " time)))
+
+
+(defun d-kill (process)
+  (interactive (let* ((history-sym	'd-kill-history)
+                      (history		(if (boundp history-sym) (eval history-sym) '()))
+                      (last-value	(if (consp history) (car history) ""))
+                      (input-value  (read-string (concat "process str" "(default: " last-value "): ") nil history-sym)))
+                 (list (if (string= input-value "") last-value input-value))))
+  (let ((shell-buffer (get-buffer-create (concat "*temp-" (number-to-string (random)) "*"))))
+    (with-current-buffer shell-buffer
+      (eshell-command (concat "ps -aW | grep -i " process) t)
+      (goto-char (point-min))
+      (let ((csv-data nil))
+        (while (not (eobp))
+          (let ((line (buffer-substring-no-properties
+                       (line-beginning-position) (line-end-position))))
+            (push (split-string line split-string-default-separators t split-string-default-separators) csv-data))
+          (forward-line 1))
+        (setq csv-data (reverse csv-data))
+        ;;(debug)
+        (if (or (= (length csv-data) 0)
+                (string= (caar csv-data) "Usage:"))
+            (message "No process found...")
+          (let ((kill-count 0))
+            (cl-loop for line in csv-data
+                     do (let ((pid (elt line 0))
+                              (proc-path (elt line (- (length line) 1))))
+                          (if (y-or-n-p (concat "kill " pid " (" proc-path ")?"))
+                              (progn ;(eshell-command (concat "kill " pid))
+                                     (eshell-command (concat "taskkill.exe /F /PID " pid))
+                                     (incf kill-count)))))
+            (message (concat "Found " (number-to-string (length csv-data)) " processes, killed " (number-to-string kill-count)))))))
+    (kill-buffer shell-buffer)))
