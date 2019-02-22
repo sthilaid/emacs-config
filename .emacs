@@ -594,6 +594,7 @@ Use \\[edit-tab-stops] to edit them interactively."
     (end-of-line)
     (let ((line (buffer-substring-no-properties (region-beginning) (region-end))))
      (kill-new line)
+     (deactivate-mark)
      (message (concat "\"" line "\" copied to kill-ring")))))
 
 (global-set-key (kbd "M-k") 'd-copy-current-line) 
