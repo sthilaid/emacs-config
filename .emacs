@@ -585,7 +585,18 @@ Use \\[edit-tab-stops] to edit them interactively."
               (delete-region (region-beginning) (region-end)))))
     nil))
 
-(global-set-key (kbd "M-k") 'd-nuke-line-start-blanks)
+(defun d-copy-current-line ()
+  "copy the current line into the kill ring"
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (set-mark (point))
+    (end-of-line)
+    (let ((line (buffer-substring-no-properties (region-beginning) (region-end))))
+     (kill-new line)
+     (message (concat "\"" line "\" copied to kill-ring")))))
+
+(global-set-key (kbd "M-k") 'd-copy-current-line) 
 
 (defun d-rename-file-and-buffer (new-name)
   "Renames both the buffer and the file associated with the buffer"
