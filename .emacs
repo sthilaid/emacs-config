@@ -781,3 +781,7 @@ Use \\[edit-tab-stops] to edit them interactively."
        (funcall indent-and-newline 2))
      )))
 
+(defun d-sort-lines-case-insensitive (rev beg end)
+  (interactive "P\nr")
+  (let ((sort-fold-case t))
+    (sort-lines rev beg end)))
