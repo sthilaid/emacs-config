@@ -167,6 +167,12 @@
 (add-hook 'c++-mode-common-hook 'my-c-mode-common-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; codesearch
+(require 'codesearch)
+(setq codesearch-global-csearchindex "~/")
+(require 'listing-codesearch)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; highlight-symbol
 
 (require 'highlight-symbol)
@@ -261,13 +267,53 @@
 ;; ide mode
 
 (add-to-list 'load-path "~/emacs-stuff/ide")
-(custom-set-variables '(ide-default-current-solution "xxxxxxxxxxxxxxxxxxx"))
+
 (custom-set-variables '(ide-msbuild-path "\"C:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe\""))
-(custom-set-variables '(ide-vs-platforms '("Any CPU")))
 (custom-set-variables '(ide-tags-generator '"C:/Users/dsthillaire/Documents/emacs-25.3_1-x86_64/bin/etags.exe"))
-(custom-set-variables '(ide-vs-configurations '("xxxxxxxx")))
-(custom-set-variables '(ide-additionnal-source-paths '("w:/Main/external/technology-group/gear/" "w:/Main/external/ImGui/")))
+(custom-set-variables '(ide-cindex-path '"c:/Users/dsthillaire/go/bin/cindex.exe"))
+(custom-set-variables '(ide-csearch-path '"c:/Users/dsthillaire/go/bin/csearch.exe"))
+(custom-set-variables '(ide-use-local-codesearch-index? t))
 (require 'ide)
+
+(ide-config-create 'orwell                      ; name
+                   "w:/Main/code/WatchDogs.sln" ; default-current-solution
+                   :extensions nil
+                   :additionnal-source-paths '("w:/Main/external/technology-group/gear/" "w:/Main/external/ImGui/")
+                   :vs-configurations '("X64-Release"
+                                        "X64-Release-NoUnity"
+                                        "X64-Retail"
+                                        "X64-Master"
+                                        "Durango-DX12-Master"
+                                        "Durango-DX12-Release"
+                                        "Durango-DX12-Retail"
+                                        "Durango-DX12-RetailPerf"
+                                        "Durango-Master"
+                                        "Durango-Release"
+                                        "Durango-Retail"
+                                        "Durango-RetailPerf"
+                                        "DX12-Master"
+                                        "DX12-Release"
+                                        "DX12-Retail"
+                                        "Editor-Tools"
+                                        "Orbis-Master"
+                                        "Orbis-Release"
+                                        "Orbis-Retail"
+                                        "Orbis-RetailTestKit")
+                   :vs-platforms '("Any CPU"))
+
+(ide-config-create 'lisp
+                   "d:/lisp"; default-current-solution
+                   :extensions '("py")
+                   )
+
+(ide-config-create '3dmath                                                  ; name
+                   "c:/Users/dsthillaire/AppData/Roaming/emacs-stuff/3dmath"; default-current-solution
+                   :extensions '("el")
+                   :directory-solution-lambda (lambda (files) (dolist (f files) (byte-compile-file f t))))
+
+(ide-config-create 'webgl
+                   "d:/webgl-fun-master"; default-current-solution
+                   :extensions '("js" "html" "py"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; igo mode
@@ -276,8 +322,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; unity3d mode
 
-;; (custom-set-variables '(unity3d-current-project "xxxxx"))
-;; (custom-set-variables '(unity3d-project-root "xxxxx"))
+;; (custom-set-variables '(unity3d-current-project "GaiaProto"))
+;; (custom-set-variables '(unity3d-project-root "d:/motive"))
 ;; (require 'unity3d)
 ;; (add-hook 'csharp-mode-hook 'unity3d-mode)
 ;; (add-hook 'csharp-mode-hook
@@ -447,8 +493,6 @@
   (forward-word)
   (backward-word)
   (kill-region (mark) (point)))
-
-(global-set-key (kbd "M-'") 'd-remove-space-to-next-word)
 
 (defun d-multi-fold (f base &rest lists)
   (if (null lists)
@@ -627,7 +671,19 @@ Use \\[edit-tab-stops] to edit them interactively."
               (delete-region (region-beginning) (region-end)))))
     nil))
 
-(global-set-key (kbd "M-k") 'd-nuke-line-start-blanks)
+(defun d-copy-current-line ()
+  "copy the current line into the kill ring"
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (set-mark (point))
+    (end-of-line)
+    (let ((line (buffer-substring-no-properties (region-beginning) (region-end))))
+     (kill-new line)
+     (deactivate-mark)
+     (message (concat "\"" line "\" copied to kill-ring")))))
+
+(global-set-key (kbd "M-k") 'd-copy-current-line) 
 
 (defun d-rename-file-and-buffer (new-name)
   "Renames both the buffer and the file associated with the buffer"
@@ -755,3 +811,68 @@ Use \\[edit-tab-stops] to edit them interactively."
                                      (incf kill-count)))))
             (message (concat "Found " (number-to-string (length csv-data)) " processes, killed " (number-to-string kill-count)))))))
     (kill-buffer shell-buffer)))
+
+(defun d-dired-visit-marked-files ()
+  (interactive)
+  (let* ((files (dired-get-marked-files nil nil)))
+    (mapc 'find-file files)))
+
+;;(setq debug-on-error f)
+
+(defun d-python-insert-class (classname members)
+  (interactive (list (read-string "class name: " nil 'd-python-insert-class)
+                     (let ((data (read)))
+                       (if (not (listp data))
+                           (error "members should be a lisp list containing symbols for the members names"))
+                       (mapcar 'prin1-to-string data))))
+  (let ((indent-and-newline (lambda (n)
+                              (beginning-of-line)
+                              (insert (make-string (* n 4) ?\ ))
+                              (end-of-line)
+                              (newline)))
+        (members-strList (let ((lst (seq-reduce (lambda (a x) (concat a " " x ",")) members "")))
+                           (if (> (length members) 0)
+                               (substring lst 0 (- (length lst) 1))
+                             lst)))
+        (members-strList-self (let ((lst (seq-reduce (lambda (a x) (concat a " self." x ",")) members "")))
+                                (if (> (length members) 0)
+                                    (substring lst 0 (- (length lst) 1))
+                                  lst))))
+   (save-excursion
+     (insert (concat "class " classname ":"))
+     (funcall indent-and-newline 0)
+     ;; Constructor
+     (if (= (length members) 0)
+         (insert "def __init__(self)")
+       (insert "def __init__(self," members-strList "):"))
+     (funcall indent-and-newline 1)
+     
+     (if (= 0 (length members))
+         (progn (insert "pass")
+                (funcall indent-and-newline 2))
+       (cl-loop for m in members
+                do (progn (insert (concat "self." m " = " m))
+                          (funcall indent-and-newline 2))))
+     ;; REPR
+     (insert "def __repr__(self):")
+     (funcall indent-and-newline 1)
+     (let ((membersFmt (seq-reduce (lambda (a m) (concat a "%s,")) members "")))
+       (if (> (length members) 0)
+           (setq membersFmt (substring membersFmt 0 (- (length membersFmt) 1))))
+       (insert (concat "return \"" classname "(" membersFmt ")\" % (" members-strList-self ")"))
+       (funcall indent-and-newline 2))
+
+     ;; STR
+     (insert "def __str__(self):")
+     (funcall indent-and-newline 1)
+     (let ((membersFmt (seq-reduce (lambda (a m) (concat a "%s,")) members "")))
+       (if (> (length members) 0)
+           (setq membersFmt (substring membersFmt 0 (- (length membersFmt) 1))))
+       (insert (concat "return \"" classname "(" membersFmt ")\" % (" members-strList-self ")"))
+       (funcall indent-and-newline 2))
+     )))
+
+(defun d-sort-lines-case-insensitive (rev beg end)
+  (interactive "P\nr")
+  (let ((sort-fold-case t))
+    (sort-lines rev beg end)))
