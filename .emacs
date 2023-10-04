@@ -10,7 +10,7 @@
 (add-to-list 'load-path "~/emacs-stuff")
 
 ;; increase font size (default: 100)
-(set-face-attribute 'default (selected-frame) :height 150)
+(set-face-attribute 'default (selected-frame) :height 130)
 
 (scroll-bar-mode 0)
 (tool-bar-mode 0)
@@ -32,6 +32,7 @@
 ;; custom key bindings
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-M-=") 'rgrep)
+(global-set-key (kbd "C-z") (lambda () (interactive) (delete-other-windows) (bury-buffer)))
 
 ;; matching parenthesis highlighting
 (show-paren-mode t)
@@ -81,12 +82,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; csharp mode
 
+(add-to-list 'load-path "~/emacs-stuff/csharp-mode")
 (autoload 'csharp-mode "csharp-mode" "Major mode for editing C# code." t)
 (setq auto-mode-alist
       (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Perforce
+
 ;; perforce integration // http://p4el.sourceforge.net/p4.el.html
-;;(load-library "p4")
+(add-to-list 'load-path "~/emacs-stuff/p4.el")
+(require 'p4)
 
 ;; diff two buffer regions (https://gist.github.com/zdavkeos/1279865/download#)
                                         ;(load-library "diff_region")
@@ -115,12 +121,12 @@
 (setq-default c-default-style "awk"
               c-basic-offset 4
               tab-width 4
-              indent-tabs-mode t)
+              indent-tabs-mode nil)
 
 ;; (setq-default c-default-style "java"
 ;; c-basic-offset 4
 ;; tab-width 4
-;; indent-tabs-mode t)
+;; indent-tabs-mode nil)
 
 (setq tab-stop-list (number-sequence 4 120 4))
 
@@ -140,6 +146,7 @@
   (setq comment-end "")
   )
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 
 (add-hook 'c++-mode-hook
           '(lambda()
@@ -165,8 +172,15 @@
 (add-hook 'c++-mode-common-hook 'my-c-mode-common-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; codesearch
+;; (require 'codesearch)
+;; (setq codesearch-global-csearchindex "~/")
+;; (require 'listing-codesearch)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; highlight-symbol
 
+(add-to-list 'load-path "~/emacs-stuff/highlight-symbol.el")
 (require 'highlight-symbol)
 (add-hook 'prog-mode-hook (lambda ()
                             (highlight-symbol-mode t)
@@ -185,7 +199,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; multiple-cursors
 
-(add-to-list 'load-path "~/emacs-stuff/multiple-cursors")
+(add-to-list 'load-path "~/emacs-stuff/multiple-cursors.el")
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -242,12 +256,49 @@
 ;; (add-to-list 'auto-mode-alist '("\\.inl\\'" . c++-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.build\\'" . xml-mode))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; compilation
+
+;; (defun d-compile-first-error ()
+;;   "Point goes to the first compilation error, if any. Else point goes at the end of the buffer."
+;;   (goto-char 0)
+;;   (compilation-next-error 1))
+
+;; (define-key compilation-mode-map (kbd "<C-Tab>") 'd-compile-first-error)
+
+(custom-set-variables '(compilation-auto-jump-to-first-error t))
+(require 'compile)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ide mode
+
 (add-to-list 'load-path "~/emacs-stuff/ide")
-(custom-set-variables '(ide-default-current-project "c:/Users/david/AppData/Roaming/UnrealEngine/UE4.sln"))
+
+(custom-set-variables '(ide-msbuild-path "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe\""))
+(custom-set-variables '(ide-tags-generator '"C:/Users/dsthilaire/Documents/emacs-28.1/bin/etags.exe"))
+(custom-set-variables '(ide-cindex-path '"c:/Users/dsthilaire/go/bin/cindex.exe"))
+(custom-set-variables '(ide-csearch-path '"c:/Users/dsthilaire/go/bin/csearch.exe"))
+(custom-set-variables '(ide-use-local-codesearch-index? t))
 (require 'ide)
+
+(add-hook 'c-mode-common-hook (lambda()
+                                ;; bunch of settings for C-mode 
+                                (add-to-list 'compilation-error-regexp-alist '("^ *\\(.*?\\)(\\([0-9]+\\),\\([0-9]+\\)): error : .*" 1 2 3 2))
+    ))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; igo mode
+(add-to-list 'load-path "~/emacs-stuff/igo.el")
+(require 'igo)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; codesearch
+(add-to-list 'load-path "~/emacs-stuff/codesearch.el")
+(require 'codesearch)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; logview mode
+;; (add-to-list 'load-path "~/emacs-stuff/logview")
+;; (require 'logview)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; unity3d mode
@@ -275,8 +326,34 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; git
-(require 'git)
-(require 'git-blame)
+;; (require 'git)
+;; (require 'git-blame)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; lua
+(add-to-list 'load-path "~/emacs-stuff/lua-mode")
+(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
+(add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+(add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; python
+(custom-set-variables '(python-shell-exec-path (cons "d:/python37"
+                                                     nil)))
+
+(custom-set-variables '(gud-pdb-command-name (cons "d:/python37 -m pdb "
+                                                     nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; crc
+(add-to-list 'load-path "~/emacs-stuff/crc.el")
+(require 'crc)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; guid
+
+(add-to-list 'load-path "~/emacs-stuff/guid")
+(require 'guid)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User Code and Functions
@@ -406,8 +483,6 @@
   (backward-word)
   (kill-region (mark) (point)))
 
-(global-set-key (kbd "M-'") 'd-remove-space-to-next-word)
-
 (defun d-multi-fold (f base &rest lists)
   (if (null lists)
       base
@@ -448,7 +523,7 @@
       (yank))
     (goto-char (+ (line-beginning-position) line-delta))))
 
-(global-set-key (kbd "C-c C-k") 'd-duplicate-line)
+(global-set-key (kbd "M-k") 'd-duplicate-line)
 
 (defun d-reverse-tab-insert ()
   "Removes spaces or tabs to the previous defined tab-stop column.
@@ -593,11 +668,11 @@ Use \\[edit-tab-stops] to edit them interactively."
     (set-mark (point))
     (end-of-line)
     (let ((line (buffer-substring-no-properties (region-beginning) (region-end))))
-     (kill-new line)
-     (deactivate-mark)
-     (message (concat "\"" line "\" copied to kill-ring")))))
+      (kill-new line)
+      (deactivate-mark)
+      (message (concat "\"" line "\" copied to kill-ring")))))
 
-(global-set-key (kbd "M-k") 'd-copy-current-line) 
+(global-set-key (kbd "C-M-k") 'd-copy-current-line)
 
 (defun d-rename-file-and-buffer (new-name)
   "Renames both the buffer and the file associated with the buffer"
@@ -665,11 +740,6 @@ Use \\[edit-tab-stops] to edit them interactively."
 (defun d-copy-filepath ()
   "Copies the current buffer file complete path to the kill-ring / clipboard"
   (interactive)
-  (kill-new (buffer-file-name (current-buffer))))
-
-(defun d-copy-filepath ()
-  "Copies the current buffer file complete path to the kill-ring / clipboard"
-  (interactive)
   (let ((filename (buffer-file-name (current-buffer))))
     (kill-new filename)
     (message filename)))
@@ -695,6 +765,9 @@ Use \\[edit-tab-stops] to edit them interactively."
                      (insert "TEA IS READY")))))
   (message (concat "tea will be ready in " time)))
 
+;; eshell reference
+;; ----
+;; for f in * (save-excursion (progn (find-file f) (replace-regexp "aaa/" "bbb/aaa/") (save-excursion)))
 
 (defun d-kill (process)
   (interactive (let* ((history-sym	'd-kill-history)
@@ -723,10 +796,17 @@ Use \\[edit-tab-stops] to edit them interactively."
                               (proc-path (elt line (- (length line) 1))))
                           (if (y-or-n-p (concat "kill " pid " (" proc-path ")?"))
                               (progn ;(eshell-command (concat "kill " pid))
-                                     (eshell-command (concat "taskkill.exe /F /PID " pid))
+                                     (eshell-command (concat "taskkill.exe /T /F /PID " pid))
                                      (incf kill-count)))))
             (message (concat "Found " (number-to-string (length csv-data)) " processes, killed " (number-to-string kill-count)))))))
     (kill-buffer shell-buffer)))
+
+(defun d-dired-visit-marked-files ()
+  (interactive)
+  (let* ((files (dired-get-marked-files nil nil)))
+    (mapc 'find-file files)))
+
+;;(setq debug-on-error f)
 
 (defun d-python-insert-class (classname members)
   (interactive (list (read-string "class name: " nil 'd-python-insert-class)
@@ -785,3 +865,5 @@ Use \\[edit-tab-stops] to edit them interactively."
   (interactive "P\nr")
   (let ((sort-fold-case t))
     (sort-lines rev beg end)))
+
+(global-set-key (kbd "M-s") 'd-sort-lines-case-insensitive)
